@@ -3140,6 +3140,12 @@ class get_dapi_features:
         
         self.save_fl = save_folder+os.sep+fov+'--'+htag+'--'+set_+'dapiFeatures.npz'
         self.fl = fl
+        if os.path.exists(self.save_fl) and (not redo):
+            try:
+                dic = np.load(self.save_fl,allow_pickle=True)
+                self.Xh_minus,self.Xh_plus = dic['Xh_minus'],dic['Xh_plus']
+            except:
+                redo=True
         if not os.path.exists(self.save_fl) or redo:
             self.psf = np.load(psf_fl)
             if im_med_fl is not None:
@@ -3149,9 +3155,7 @@ class get_dapi_features:
             self.load_im()
             self.get_X_plus_minus()
             np.savez(self.save_fl,Xh_plus = self.Xh_plus,Xh_minus = self.Xh_minus)
-        else:
-            dic = np.load(self.save_fl)
-            self.Xh_minus,self.Xh_plus = dic['Xh_minus'],dic['Xh_plus']
+
     def load_im(self):
         """
         Load the image from file fl and apply: flat field, deconvolve, subtract local background and normalize by std
